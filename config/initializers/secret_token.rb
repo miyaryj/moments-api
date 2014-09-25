@@ -9,4 +9,19 @@
 
 # Make sure your secret_key_base is kept private
 # if you're sharing your code publicly.
-MomentsApi::Application.config.secret_key_base = '8dee6e9c9d6abb8a6ac79bd7c7c0d6930b8b638ba3e52745927910decd1f5cb366e74ab07f16bd227138dab7ceeffa0983eaf4073528810cefb14079c70b2152'
+require 'securerandom'
+
+def secure_token
+  token_file = Rails.root.join('.secret')
+  if File.exist?(token_file)
+    # Use the existing token.
+    File.read(token_file).chomp
+  else
+    # Generate a new token and store it in token_file.
+    token = SecureRandom.hex(64)
+    File.write(token_file, token)
+    token
+  end
+end
+
+MomentsApi::Application.config.secret_key_base = secure_token
